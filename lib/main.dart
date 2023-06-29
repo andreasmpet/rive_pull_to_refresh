@@ -77,8 +77,7 @@ class _PullToRefreshPlaygroundPageState extends State<PullToRefreshPlaygroundPag
   late SMINumber _pullAmountInputHandle;
   late SMITrigger _triggerRefreshInputHandle;
 
-  DateTime? _lastRefreshed;
-
+  bool _isRefreshing = false;
   List<TennisMatch>? _loadedMatches;
 
   @override
@@ -99,7 +98,6 @@ class _PullToRefreshPlaygroundPageState extends State<PullToRefreshPlaygroundPag
 
   @override
   Widget build(BuildContext context) {
-    final lastRefreshed = _lastRefreshed;
     return Scaffold(
       appBar: AppBar(
           title: Text("Tennis Schedule", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
@@ -112,41 +110,48 @@ class _PullToRefreshPlaygroundPageState extends State<PullToRefreshPlaygroundPag
             ),
             slivers: [
               _buildPullToRefreshIndicator(screenWidth: screenWidth),
-              _buildHeader(context, lastRefreshed),
+              _buildHeader(context, _isRefreshing),
               _buildScheduleList(context, _loadedMatches ?? []),
             ]);
       }),
     );
   }
 
-  SliverToBoxAdapter _buildHeader(BuildContext context, DateTime? lastRefreshed) {
+  SliverToBoxAdapter _buildHeader(BuildContext context, bool isRefreshing) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return SliverToBoxAdapter(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Container(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Pull to refresh",
-              style: textTheme.titleMedium!.copyWith(color: colorScheme.onSecondary),
-              textAlign: TextAlign.center,
+      child: AnimatedSlide(
+        offset: isRefreshing ? const Offset(0, -1) : Offset.zero,
+        duration: const Duration(milliseconds: 300),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Container(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Pull to refresh",
+                style: textTheme.titleMedium!.copyWith(color: colorScheme.onSecondary),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
-        ),
-      ]),
+        ]),
+      ),
     );
   }
 
   Future<void> _onRefresh() async {
+    setState(() {
+      _isRefreshing = true;
+    });
     // Tell the state machine that we're gonna fire off the trigger animation
     _stateMachineController!.setInputValue(_triggerRefreshInputHandle.id, true);
     await Future.delayed(_refreshDuration);
 
     setState(() {
+      _isRefreshing = false;
       _loadedMatches = _generateMatches();
-      _lastRefreshed = DateTime.now();
     });
   }
 
@@ -215,7 +220,7 @@ class _PullToRefreshPlaygroundPageState extends State<PullToRefreshPlaygroundPag
       },
       separatorBuilder: (context, index) {
         return const Padding(
-          padding: EdgeInsets.symmetric(horizontal:  16.0),
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Divider(),
         );
       },
