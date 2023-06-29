@@ -66,10 +66,10 @@ class _PullToRefreshPlaygroundPageState extends State<PullToRefreshPlaygroundPag
   static const String _triggerInputName = "Trigger";
 
   // Tweak this to tweak how much of the vertical height of the animation you need to pull before refreshing
-  static const double _animationTriggerAspectRatio = 0.6;
+  static const double _animationTriggerAspectRatio = 0.5;
 
   // Tweak this to tweak how much of the vertical height of the animation you want to show when it's loading
-  static const double _indicatorAspectRatio = 0.6;
+  static const double _indicatorAspectRatio = 0.5;
 
   StateMachineController? _stateMachineController;
   RiveFile? _riveFile;
