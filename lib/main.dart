@@ -202,7 +202,7 @@ class _PullToRefreshPlaygroundPageState extends State<PullToRefreshPlaygroundPag
   }
 
   Widget _buildScheduleList(BuildContext context, List<TennisMatch> matches) {
-    final dateFormatter = DateFormat.yMMMMd();
+    final dateFormatter = DateFormat.yMMMMd().add_Hm();
 
     return SliverList.separated(
       itemBuilder: (context, index) {
