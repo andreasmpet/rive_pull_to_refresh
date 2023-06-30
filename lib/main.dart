@@ -173,16 +173,14 @@ class _PullToRefreshPlaygroundPageState extends State<PullToRefreshPlaygroundPag
       builder: (context, refreshState, pulledExtent, refreshTriggerPullDistance, refreshIndicatorExtent) {
         final pullPercentage = (pulledExtent / max(1, refreshIndicatorExtent)) * 100;
         stateMachineController.setInputValue(_pullAmountInputHandle.id, pullPercentage);
-        return SizedBox(
-          height: pulledExtent,
-          child: RiveAnimation.direct(
-            riveFile,
-            controllers: [stateMachineController],
-            stateMachines: const [_stateMachineName],
-            // We want the animation to fill the width of the container regardless of the height
-            fit: BoxFit.fitWidth,
-            alignment: Alignment.center,
-          ),
+        return RiveAnimation.direct(
+          riveFile,
+          controllers: [stateMachineController],
+          stateMachines: const [_stateMachineName],
+          // We want the animation to fill the width of the container regardless of the height
+          fit: BoxFit.fitWidth,
+          // Tweak the alignment if you want to have a certain part of the animation stick to the pulled edge.
+          alignment: Alignment.center,
         );
       },
     );
@@ -219,10 +217,7 @@ class _PullToRefreshPlaygroundPageState extends State<PullToRefreshPlaygroundPag
         );
       },
       separatorBuilder: (context, index) {
-        return const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Divider(),
-        );
+        return const Divider(endIndent: 16,indent: 16);
       },
       itemCount: matches.length,
     );
